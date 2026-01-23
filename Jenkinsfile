@@ -3,47 +3,37 @@ pipeline {
 
   environment {
     AWS_REGION = "ap-south-1"
-    ECR_REPO = "131127508996.dkr.ecr.ap-south-1.amazonaws.com/myapp"
-    IMAGE_TAG = "${BUILD_NUMBER}"
-    CLUSTER_NAME = "eks-demo"
+    ECR_REPO = "<ECR-URI>"
   }
 
   stages {
 
     stage('Checkout') {
       steps {
-        echo "Code checked out"
+        git 'https://github.com/<your-username>/sample-app.git'
       }
     }
 
-    stage('Login to ECR') {
+    stage('Build Image') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-creds']]) {
-          sh '''
-          aws ecr get-login-password --region $AWS_REGION |
-          docker login --username AWS --password-stdin $ECR_REPO
-          '''
-        }
+        sh 'docker build -t sample-app .'
       }
     }
 
-    stage('Build & Push Docker Image') {
+    stage('ECR Login') {
       steps {
         sh '''
-        docker build -t eks-app .
-        docker tag eks-app:latest $ECR_REPO:$IMAGE_TAG
-        docker push $ECR_REPO:$IMAGE_TAG
+        aws ecr get-login-password --region $AWS_REGION |
+        docker login --username AWS --password-stdin $ECR_REPO
         '''
       }
     }
 
-    stage('Configure kubectl') {
+    stage('Push Image') {
       steps {
         sh '''
-        aws eks update-kubeconfig \
-          --region $AWS_REGION \
-          --name $CLUSTER_NAME
+        docker tag sample-app:latest $ECR_REPO:latest
+        docker push $ECR_REPO:latest
         '''
       }
     }
@@ -51,8 +41,8 @@ pipeline {
     stage('Deploy to EKS') {
       steps {
         sh '''
-        sed -i "s|IMAGE_PLACEHOLDER|$ECR_REPO:$IMAGE_TAG|" k8s/deployment.yaml
-        kubectl apply -f k8s/
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
         '''
       }
     }

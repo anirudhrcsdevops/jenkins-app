@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eks-app
+  name: sample-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: eks-app
+      app: sample-app
   template:
     metadata:
       labels:
-        app: eks-app
+        app: sample-app
     spec:
       containers:
-      - name: eks-app
-        image: IMAGE_PLACEHOLDER
+      - name: sample-app
+        image: <ECR-URI>:latest
         ports:
         - containerPort: 3000
