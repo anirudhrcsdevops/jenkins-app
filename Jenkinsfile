@@ -18,7 +18,7 @@ stage('ECR Login') {
   steps {
     sh '''
     aws ecr get-login-password --region $AWS_REGION \
-    | docker login --username AWS --password-stdin xxxxxxxx.dkr.ecr.ap-south-1.amazonaws.com
+    | docker login --username AWS --password-stdin 131127508996.dkr.ecr.ap-south-1.amazonaws.com/sample-app
     '''
   }
 }
