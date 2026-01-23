@@ -2,8 +2,9 @@ pipeline {
   agent any
 
   environment {
-    AWS_REGION = "ap-south-1"
-    ECR_REPO = "xxxxxxxx.dkr.ecr.ap-south-1.amazonaws.com/sample-app"
+    AWS_REGION   = "ap-south-1"
+    ECR_REGISTRY = "131127508996.dkr.ecr.ap-south-1.amazonaws.com"
+    ECR_REPO     = "sample-app"
   }
 
   stages {
@@ -14,21 +15,20 @@ pipeline {
       }
     }
 
-stage('ECR Login') {
-  steps {
-    sh '''
-    aws ecr get-login-password --region $AWS_REGION \
-    | docker login --username AWS --password-stdin 131127508996.dkr.ecr.ap-south-1.amazonaws.com/sample-app
-    '''
-  }
-}
-
+    stage('ECR Login') {
+      steps {
+        sh '''
+        aws ecr get-login-password --region $AWS_REGION \
+        | docker login --username AWS --password-stdin $ECR_REGISTRY
+        '''
+      }
+    }
 
     stage('Push Image') {
       steps {
         sh '''
-        docker tag sample-app:latest $ECR_REPO:latest
-        docker push $ECR_REPO:latest
+        docker tag sample-app:latest $ECR_REGISTRY/$ECR_REPO:latest
+        docker push $ECR_REGISTRY/$ECR_REPO:latest
         '''
       }
     }
