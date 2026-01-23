@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: sample-app
-        image: <ECR-URI>:latest
+        image: 131127508996.dkr.ecr.ap-south-1.amazonaws.com/sample-app:latest
         ports:
         - containerPort: 3000

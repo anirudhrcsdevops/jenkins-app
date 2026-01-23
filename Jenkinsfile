@@ -3,14 +3,14 @@ pipeline {
 
   environment {
     AWS_REGION = "ap-south-1"
-    ECR_REPO = "<ECR-URI>"
+    ECR_REPO = "131127508996.dkr.ecr.ap-south-1.amazonaws.com/sample-app"
   }
 
   stages {
 
     stage('Checkout') {
       steps {
-        git 'https://github.com/<your-username>/sample-app.git'
+        git 'https://github.com/anirudhrcsdevops/jenkins-app.git'
       }
     }
 
